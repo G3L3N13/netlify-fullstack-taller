@@ -90,7 +90,7 @@
 
         <label for="mensaje">Mensaje</label>
         <textarea id="mensaje" name="mensaje" rows="5" placeholder="Escribe un mensaje..." required></textarea>
-
+        <p id="Contador">0 caracteres</p>
         <button id="btnEnviar" type="submit">Enviar al backend</button>
       </form>
       <div id="estado" class="estado"></div>
@@ -99,6 +99,7 @@
     <section class="card">
       <h2>Mensajes</h2>
       <button id="btnCargar">Cargar mensajes demo</button>
+      <button id="btnLimpiar" type="button">Limpiar lista</button>
       <div id="listaMensajes"></div>
     </section>
   </main>
@@ -109,8 +110,15 @@
     const listaMensajes = document.getElementById("listaMensajes");
     const btnEnviar = document.getElementById("btnEnviar");
     const btnCargar = document.getElementById("btnCargar");
-
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    const txtMensaje = document.getElementById("mensaje");
+    const contador = document.getElementById("Contador");
     const API_BASE = "/api";
+
+    txtMensaje.addEventListener("input", () => {
+      const length = txtMensaje.value.length;
+      contador.textContent = `${length} caracteres`;
+    });
 
     function mostrarEstado(texto, tipo) {
       estado.textContent = texto;
@@ -138,7 +146,7 @@
           throw new Error(result.error || "No se pudieron cargar los mensajes");
         }
 
-        listaMensajes.innerHTML = "";
+        listaMensajes.innerHTML = ""; 
         result.data.forEach(renderMensaje);
       } catch (error) {
         listaMensajes.innerHTML = `<p style="color:red">${error.message}</p>`;
@@ -156,6 +164,14 @@
         email: document.getElementById("email").value.trim(),
         mensaje: document.getElementById("mensaje").value.trim()
       };
+
+      if(data.nombre.length < 5|| data.mensaje.length < 10) {
+        mostrarEstado("El nombre debe tener al menos 5 caracteres y el mensaje al menos 10 caracteres.", "error");
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = "Enviar al backend";
+        return;
+      }
+
 
       try {
         const response = await fetch(`${API_BASE}/mensajes`, {
@@ -182,6 +198,9 @@
     });
 
     btnCargar.addEventListener("click", cargarMensajes);
+    btnLimpiar.addEventListener("click", () => {
+      listaMensajes.innerHTML = "";
+    });
   </script>
 </body>
 </html>
