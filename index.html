@@ -188,6 +188,10 @@
 
         mostrarEstado(result.message, "ok");
         renderMensaje(result.data);
+        const mensajesGuardados = JSON.parse(localStorage.getItem("mensajes")) || [];
+        mensajesGuardados.push(result.data);
+        localStorage.setItem("mensajes", JSON.stringify(mensajesGuardados));
+
         form.reset();
       } catch (error) {
         mostrarEstado(error.message, "error");
@@ -200,6 +204,11 @@
     btnCargar.addEventListener("click", cargarMensajes);
     btnLimpiar.addEventListener("click", () => {
       listaMensajes.innerHTML = "";
+    });
+
+    window.addEventListener("load", () => {
+      const mensajes = JSON.parse(localStorage.getItem("mensajes")) || [];
+      mensajes.forEach(renderMensaje);
     });
   </script>
 </body>
